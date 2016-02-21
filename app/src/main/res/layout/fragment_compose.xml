@@ -1,0 +1,70 @@
+
+
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.codepath.apps.mytweetbox.activities.ComposeFragment">
+
+    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/edit_name"
+        android:layout_width="wrap_content" android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_margin="20dp">
+
+        <TextView
+            android:id="@+id/tvComposeTweet"
+            android:text="Compose a Tweet:"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <EditText
+            android:id="@+id/etTweetBody"
+            android:layout_width="match_parent"
+            android:layout_height="100dp"
+            android:layout_below="@id/tvComposeTweet"
+            android:inputType="textMultiLine"
+            android:imeOptions="actionDone"
+            android:lines="4"
+            android:minLines="3"
+            android:minHeight="30dp"
+            android:maxLength="@integer/tweet_max_size" />
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Send Tweet"
+            android:id="@+id/bSendTweet"
+            android:layout_below="@id/etTweetBody"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"
+            android:layout_marginLeft="15dp"/>
+
+
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="140"
+            android:id="@+id/tvRemaining"
+            android:layout_below="@id/etTweetBody"
+            android:layout_toLeftOf="@+id/bSendTweet"
+            android:layout_alignTop="@id/bSendTweet"
+            android:layout_alignBottom="@id/bSendTweet"
+            android:gravity="center"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Remaining: "
+            android:id="@+id/tvRemainingLabel"
+            android:layout_below="@+id/etTweetBody"
+            android:layout_toLeftOf="@id/tvRemaining"
+            android:layout_alignTop="@id/bSendTweet"
+            android:layout_alignBottom="@id/bSendTweet"
+            android:gravity="center"/>
+
+
+    </RelativeLayout>
+
+</FrameLayout>
