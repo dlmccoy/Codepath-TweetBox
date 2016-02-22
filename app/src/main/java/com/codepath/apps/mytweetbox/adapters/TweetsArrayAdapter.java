@@ -10,10 +10,10 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.codepath.apps.mytweetbox.R;
 import com.codepath.apps.mytweetbox.models.Tweet;
 import com.codepath.apps.mytweetbox.models.User;
-import com.squareup.picasso.Picasso;
 
 import org.w3c.dom.Text;
 
@@ -22,18 +22,24 @@ import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.Locale;
 
+import butterknife.Bind;
+import butterknife.ButterKnife;
+
 
 public class TweetsArrayAdapter extends ArrayAdapter<Tweet> {
 
     private static final String TAG = "TweetsArrayAdapter";
 
-    private class ViewHolder {
-        public ImageView ivProfileImage;
-        public TextView tvUsername;
-        public TextView tvName;
-        public TextView tvBody;
-        public TextView tvCreated;
+    public class ViewHolder {
+        @Bind(R.id.ivProfileImage) ImageView ivProfileImage;
+        @Bind(R.id.tvUsername) TextView tvUsername;
+        @Bind(R.id.tvName) TextView tvName;
+        @Bind(R.id.tvBody) TextView tvBody;
+        @Bind(R.id.tvCreated) TextView tvCreated;
 
+        public ViewHolder(View view) {
+            ButterKnife.bind(this, view);
+        }
     }
 
     public TweetsArrayAdapter(Context context, List<Tweet> tweets) {
@@ -48,16 +54,9 @@ public class TweetsArrayAdapter extends ArrayAdapter<Tweet> {
         // Check if an existing view is being reused, otherwise inflate the view
         ViewHolder viewHolder; // view lookup cache stored in tag
         if (convertView == null) {
-            viewHolder = new ViewHolder();
             LayoutInflater inflater = LayoutInflater.from(getContext());
             convertView = inflater.inflate(R.layout.item_tweet, parent, false);
-
-            viewHolder.ivProfileImage = (ImageView) convertView.findViewById(R.id.ivProfileImage);
-
-            viewHolder.tvUsername = (TextView) convertView.findViewById(R.id.tvUsername);
-            viewHolder.tvName = (TextView) convertView.findViewById(R.id.tvName);
-            viewHolder.tvBody = (TextView) convertView.findViewById(R.id.tvBody);
-            viewHolder.tvCreated = (TextView) convertView.findViewById(R.id.tvCreated);
+            viewHolder = new ViewHolder(convertView);
             convertView.setTag(viewHolder);
         } else {
             viewHolder = (ViewHolder) convertView.getTag();
@@ -74,7 +73,7 @@ public class TweetsArrayAdapter extends ArrayAdapter<Tweet> {
         viewHolder.tvBody.setText(tweet.getBody());
         viewHolder.tvCreated.setText(getRelativeTimeAgo(tweet.getCreatedAt()));
 
-        Picasso.with(getContext()).load(tweet.getUser().getProfileImageUrl()).into(viewHolder.ivProfileImage);
+        Glide.with(getContext()).load(tweet.getUser().getProfileImageUrl()).into(viewHolder.ivProfileImage);
 
         // Return the completed view to render on screen
         return convertView;

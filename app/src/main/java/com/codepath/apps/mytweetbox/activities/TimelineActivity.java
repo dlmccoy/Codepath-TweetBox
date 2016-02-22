@@ -1,5 +1,7 @@
 package com.codepath.apps.mytweetbox.activities;
 
+import android.content.Intent;
+import android.os.Binder;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.FragmentManager;
@@ -7,6 +9,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ListView;
 
 import com.codepath.apps.mytweetbox.R;
@@ -20,15 +23,20 @@ import com.loopj.android.http.JsonHttpResponseHandler;
 import org.apache.http.Header;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.parceler.Parcels;
 
 import java.util.ArrayList;
+
+import butterknife.Bind;
+import butterknife.ButterKnife;
 
 public class TimelineActivity extends AppCompatActivity implements ComposeFragment.ComposeTweetListener {
     private final static String TAG = "TimelineActivity";
     private ArrayList<Tweet> tweets;
     private TweetsArrayAdapter aTweets;
-    private ListView lvTweets;
-    private FloatingActionButton fab;
+
+    @Bind(R.id.lvTweets) ListView lvTweets;
+    @Bind(R.id.fabCompose) FloatingActionButton fab;
 
     private TwitterClient client;
     @Override
@@ -38,7 +46,7 @@ public class TimelineActivity extends AppCompatActivity implements ComposeFragme
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        fab = (FloatingActionButton) findViewById(R.id.fabCompose);
+        ButterKnife.bind(this);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -49,7 +57,6 @@ public class TimelineActivity extends AppCompatActivity implements ComposeFragme
 
         client = TwitterApplication.getRestClient();
 
-        lvTweets = (ListView) findViewById(R.id.lvTweets);
         tweets = new ArrayList<>();
         aTweets = new TweetsArrayAdapter(this, tweets);
         lvTweets.setAdapter(aTweets);
@@ -58,6 +65,16 @@ public class TimelineActivity extends AppCompatActivity implements ComposeFragme
             public boolean onLoadMore(int page, int totalItemsCount) {
                 populateTimeline();
                 return true;
+            }
+        });
+        lvTweets.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Intent intent = new Intent(TimelineActivity.this, TweetDetailActivity.class);
+                intent.putExtra("tweet", Parcels.wrap(tweets.get(position)));
+
+                startActivity(intent);
+
             }
         });
 

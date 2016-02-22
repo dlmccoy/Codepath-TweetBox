@@ -3,12 +3,14 @@ package com.codepath.apps.mytweetbox.models;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.parceler.Parcel;
 
+@Parcel
 public class User {
-    private String name;
-    private long uid;
-    private String screenName;
-    private String profileImageUrl;
+    String name;
+    long uid;
+    String screenName;
+    String profileImageUrl;
 
 
     public String getProfileImageUrl() {
@@ -27,6 +29,7 @@ public class User {
         return screenName;
     }
 
+    public User() {}
 
     public static User fromJSON(JSONObject json) {
         User user =  new User();
