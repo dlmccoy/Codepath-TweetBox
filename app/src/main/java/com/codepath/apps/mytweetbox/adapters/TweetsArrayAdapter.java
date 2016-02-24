@@ -1,6 +1,7 @@
 package com.codepath.apps.mytweetbox.adapters;
 
 import android.content.Context;
+import android.content.Intent;
 import android.text.format.DateUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -12,6 +13,7 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.codepath.apps.mytweetbox.R;
+import com.codepath.apps.mytweetbox.activities.ProfileActivity;
 import com.codepath.apps.mytweetbox.models.Tweet;
 import com.codepath.apps.mytweetbox.models.User;
 
@@ -30,6 +32,8 @@ public class TweetsArrayAdapter extends ArrayAdapter<Tweet> {
 
     private static final String TAG = "TweetsArrayAdapter";
 
+    private String currentScreenName;
+
     public class ViewHolder {
         @Bind(R.id.ivProfileImage) ImageView ivProfileImage;
         @Bind(R.id.tvUsername) TextView tvUsername;
@@ -41,16 +45,19 @@ public class TweetsArrayAdapter extends ArrayAdapter<Tweet> {
             ButterKnife.bind(this, view);
         }
     }
-
     public TweetsArrayAdapter(Context context, List<Tweet> tweets) {
+       this(context, tweets, null);
+    }
+
+    public TweetsArrayAdapter(Context context, List<Tweet> tweets, String currentScreenName) {
         super(context, R.layout.item_tweet, tweets);
+        this.currentScreenName = currentScreenName;
     }
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         Tweet tweet = getItem(position);
 
-        Log.d(TAG, tweet.getUser().toString());
         // Check if an existing view is being reused, otherwise inflate the view
         ViewHolder viewHolder; // view lookup cache stored in tag
         if (convertView == null) {
@@ -66,12 +73,28 @@ public class TweetsArrayAdapter extends ArrayAdapter<Tweet> {
 
 
         // Populate the data into the template view using the data object
-        User user = tweet.getUser();
+        final User user = tweet.getUser();
         viewHolder.tvUsername.setText("@" + user.getScreenName());
         viewHolder.tvName.setText(user.getName());
 
         viewHolder.tvBody.setText(tweet.getBody());
         viewHolder.tvCreated.setText(getRelativeTimeAgo(tweet.getCreatedAt()));
+
+        viewHolder.ivProfileImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                // Avoid changing intents when the user's profile is already displayed.
+                if (user.getScreenName().equals(currentScreenName)) {
+                    return;
+                }
+
+                // Create the transition to the other user's profile.
+                Intent intent = new Intent(getContext(), ProfileActivity.class);
+                intent.putExtra("screenName", user.getScreenName());
+                getContext().startActivity(intent);
+            }
+        });
 
         Glide.with(getContext()).load(tweet.getUser().getProfileImageUrl()).into(viewHolder.ivProfileImage);
 
