@@ -1,10 +1,13 @@
 package com.codepath.apps.mytweetbox.activities;
 
 import android.content.Intent;
-import android.os.Binder;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.view.PagerAdapter;
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -12,10 +15,16 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
+import com.astuetz.PagerSlidingTabStrip;
 import com.codepath.apps.mytweetbox.R;
 import com.codepath.apps.mytweetbox.TwitterApplication;
 import com.codepath.apps.mytweetbox.TwitterClient;
 import com.codepath.apps.mytweetbox.adapters.TweetsArrayAdapter;
+import com.codepath.apps.mytweetbox.adapters.TweetsPagerAdapter;
+import com.codepath.apps.mytweetbox.fragments.ComposeFragment;
+import com.codepath.apps.mytweetbox.fragments.HomeTimelineFragment;
+import com.codepath.apps.mytweetbox.fragments.MentionsTimelineFragment;
+import com.codepath.apps.mytweetbox.fragments.TweetsListFragment;
 import com.codepath.apps.mytweetbox.listeners.EndlessScrollListener;
 import com.codepath.apps.mytweetbox.models.Tweet;
 import com.loopj.android.http.JsonHttpResponseHandler;
@@ -32,13 +41,14 @@ import butterknife.ButterKnife;
 
 public class TimelineActivity extends AppCompatActivity implements ComposeFragment.ComposeTweetListener {
     private final static String TAG = "TimelineActivity";
-    private ArrayList<Tweet> tweets;
-    private TweetsArrayAdapter aTweets;
 
-    @Bind(R.id.lvTweets) ListView lvTweets;
     @Bind(R.id.fabCompose) FloatingActionButton fab;
+    @Bind(R.id.viewpager) ViewPager viewPager;
+    @Bind(R.id.tabs) PagerSlidingTabStrip pagerTabs;
 
+//    private HomeTimelineFragment fragmentTweetsList;
     private TwitterClient client;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -46,7 +56,10 @@ public class TimelineActivity extends AppCompatActivity implements ComposeFragme
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        client = TwitterApplication.getRestClient();
+
         ButterKnife.bind(this);
+
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -54,56 +67,18 @@ public class TimelineActivity extends AppCompatActivity implements ComposeFragme
             }
         });
 
+//        if (savedInstanceState == null) {
+//            fragmentTweetsList = (HomeTimelineFragment) getSupportFragmentManager().findFragmentById(
+//                    R.id.fragment_timeline);
+//        }
 
-        client = TwitterApplication.getRestClient();
+        // Set the viewpager adapter
+        viewPager.setAdapter(new TweetsPagerAdapter(getSupportFragmentManager()));
 
-        tweets = new ArrayList<>();
-        aTweets = new TweetsArrayAdapter(this, tweets);
-        lvTweets.setAdapter(aTweets);
-        lvTweets.setOnScrollListener(new EndlessScrollListener() {
-            @Override
-            public boolean onLoadMore(int page, int totalItemsCount) {
-                populateTimeline();
-                return true;
-            }
-        });
-        lvTweets.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Intent intent = new Intent(TimelineActivity.this, TweetDetailActivity.class);
-                intent.putExtra("tweet", Parcels.wrap(tweets.get(position)));
+        // Attach the viewpager to the tabs.
+        pagerTabs.setViewPager(viewPager);
 
-                startActivity(intent);
 
-            }
-        });
-
-        populateTimeline();
-    }
-
-    private void populateTimeline() {
-
-        long maxId = 0;
-
-        // If some tweets have already been loaded, choose the max id based on the last one.
-        if (!aTweets.isEmpty()) {
-            maxId = tweets.get(tweets.size() - 1).getUid();
-        }
-
-        //Fetch the home timeline.
-        client.getHomeTimeline(new JsonHttpResponseHandler() {
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
-                Log.d(TAG, response.toString());
-
-                aTweets.addAll(Tweet.fromJSONArray(response));
-            }
-
-            @Override
-            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
-                Log.d(TAG, errorResponse.toString());
-            }
-        }, maxId);
     }
 
     private void showComposeDialog() {
@@ -119,8 +94,8 @@ public class TimelineActivity extends AppCompatActivity implements ComposeFragme
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                 Log.d(TAG, response.toString());
-                aTweets.clear();
-                populateTimeline();
+//                fragmentTweetsList.clearTweets();
+//                fragmentTweetsList.populateTimeline();
             }
 
             @Override
