@@ -46,7 +46,26 @@ public abstract class TweetsListFragment extends Fragment {
 
         lvTweets.setAdapter(aTweets);
 
-        return v;
+        lvTweets.setOnScrollListener(new EndlessScrollListener() {
+            @Override
+            public boolean onLoadMore(int page, int totalItemsCount) {
+                populateTimeline();
+                return true;
+            }
+        });
+        lvTweets.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Intent intent = new Intent(getActivity(), TweetDetailActivity.class);
+                intent.putExtra("tweet", Parcels.wrap(tweets.get(position)));
+
+                startActivity(intent);
+
+            }
+        });
+
+
+            return v;
     }
 
     @Override

@@ -27,33 +27,6 @@ import org.parceler.Parcels;
 public class MentionsTimelineFragment extends TweetsListFragment {
     private static final String TAG = "MentionsTimelineFrag";
 
-
-    @Nullable
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup parent, Bundle savedInstanceState) {
-        View v = super.onCreateView(inflater, parent, savedInstanceState);
-
-//        lvTweets.setOnScrollListener(new EndlessScrollListener() {
-//            @Override
-//            public boolean onLoadMore(int page, int totalItemsCount) {
-//                populateTimeline();
-//                return true;
-//            }
-//        });
-//        lvTweets.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-//            @Override
-//            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-//                Intent intent = new Intent(getActivity(), TweetDetailActivity.class);
-//                intent.putExtra("tweet", Parcels.wrap(tweets.get(position)));
-//
-//                startActivity(intent);
-//
-//            }
-//        });
-
-        return v;
-    }
-
     public void populateTimeline() {
 
         long maxId = 0;
@@ -61,8 +34,9 @@ public class MentionsTimelineFragment extends TweetsListFragment {
         // If some tweets have already been loaded, choose the max id based on the last one.
         if (!tweets.isEmpty()) {
             maxId = tweets.get(tweets.size() - 1).getUid();
-            ;
         }
+
+        Log.d(TAG, "Max id is: " + Long.toString(maxId));
 
         //Fetch the home timeline.
         client.getMentionsTimeline(new JsonHttpResponseHandler() {

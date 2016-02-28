@@ -35,6 +35,8 @@ public class ProfileActivity extends AppCompatActivity {
     @Bind(R.id.tvName) TextView tvName;
     @Bind(R.id.ivProfileImage) ImageView ivProfileImage;
     @Bind(R.id.tvTagline) TextView tvTagline;
+    @Bind(R.id.tvFollowing) TextView tvFollowing;
+    @Bind(R.id.tvFollowers) TextView tvFollowers;
 
 
     @Override
@@ -83,6 +85,11 @@ public class ProfileActivity extends AppCompatActivity {
         tvName.setText(user.getName());
         tvTagline.setText(user.getTagline());
 
+        // Update the followers and following counts.
+        tvFollowers.setText(Integer.toString(user.getFollowersCount()));
+        tvFollowing.setText(Integer.toString(user.getFollowingCount()));
+
+        // Load the profile image.
         Glide.with(this).load(user.getProfileImageUrl()).into(ivProfileImage);
     }
 
